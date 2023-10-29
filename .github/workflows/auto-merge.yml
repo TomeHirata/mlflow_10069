@@ -55,7 +55,7 @@ jobs:
           }
 
           async function areAllChecksPassed(sha) {
-            const { data: checkRuns } = await github.checks.listForRef({
+            const { data: checkRuns } = await github.rest.checks.listForRef({
               owner,
               repo,
               ref: sha
