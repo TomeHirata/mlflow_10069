@@ -28,8 +28,8 @@ jobs:
 
           async function logRateLimit() {
             const { data: rateLimit } = await github.rest.rateLimit.get();
-            console.log(`Rate limit remaining: ${rateLimit.core.remaining}`);
-            console.log(`Rate limit resets at: ${new Date(rateLimit.core.reset * 1000).toISOString()}`);
+            console.log(`Rate limit remaining: ${rateLimit.resources.core.remaining}`);
+            console.log(`Rate limit resets at: ${new Date(rateLimit.resources.core.reset * 1000).toISOString()}`);
           }
 
           async function fetchPullRequestDetails(prNumber) {            
