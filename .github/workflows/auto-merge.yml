@@ -10,7 +10,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Automerge PRs with "automerge" label created within the last month and are mergeable
       uses: actions/github-script@v6
