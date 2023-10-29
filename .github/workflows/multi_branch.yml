@@ -12,5 +12,5 @@ jobs:
         uses: actions/checkout@v4  
       - name: Run the scripts
         run: |
-          sleep 30
+          sleep 1200
           echo "multi-branch job done"
