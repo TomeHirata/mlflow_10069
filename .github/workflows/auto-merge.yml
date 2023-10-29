@@ -2,7 +2,7 @@ name: Automerge PRs
 
 on:
   schedule:
-    - cron: '*/5 * * * *'  # Run every 10 minutes
+    - cron: '*/10 * * * *'  # Run every 10 minutes
 
 jobs:
   merge:
@@ -88,11 +88,11 @@ jobs:
               continue;
             }
 
-            // if (!await isPRApproved(pr.number)) {
-            //   console.log(`PR #${pr.number} hasn't been approved. Skipping merge.`);
-            //   await logRateLimit();
-            //   continue;
-            // }
+            if (!await isPRApproved(pr.number)) {
+               console.log(`PR #${pr.number} hasn't been approved. Skipping merge.`);
+               await logRateLimit();
+               continue;
+            }
 
             if (await areAllChecksPassed(pullRequest.head.sha)) {
               try {
