@@ -10,17 +10,16 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
 
     - name: Automerge PRs with "automerge" label created within the last month and are mergeable
-      uses: actions/github-script@v5
+      uses: actions/github-script@v6
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         retries: 3
         script: |
           const { repo: { owner, repo } } = context;
 
-          const RETRY_INTERVAL_MS = 10000;  // 10 seconds
           const MERGE_INTERVAL_MS = 5000;   // 5 seconds pause after a merge
 
           async function sleep(ms) {
@@ -28,13 +27,13 @@ jobs:
           }
 
           async function logRateLimit() {
-            const { data: rateLimit } = await github.rateLimit.get();
-            console.log(`Rate limit remaining: ${rateLimit.rate.remaining}`);
-            console.log(`Rate limit resets at: ${new Date(rateLimit.rate.reset * 1000).toISOString()}`);
+            const { data: rateLimit } = await github.rest.rateLimit.get();
+            console.log(`Rate limit remaining: ${rateLimit.resources.core.remaining}`);
+            console.log(`Rate limit resets at: ${new Date(rateLimit.resources.core.reset * 1000).toISOString()}`);
           }
 
           async function fetchPullRequestDetails(prNumber) {            
-            const pullRequest = await github.pulls.get({
+            const pullRequest = await github.rest.pulls.get({
               owner,
               repo,
               pull_number: prNumber
@@ -47,7 +46,7 @@ jobs:
           }
 
           async function isPRApproved(prNumber) {
-            const { data: reviews } = await github.pulls.listReviews({
+            const { data: reviews } = await github.rest.pulls.listReviews({
               owner,
               repo,
               pull_number: prNumber
@@ -56,7 +55,7 @@ jobs:
           }
 
           async function areAllChecksPassed(sha) {
-            const { data: checkRuns } = await github.checks.listForRef({
+            const { data: checkRuns } = await github.rest.checks.listForRef({
               owner,
               repo,
               ref: sha
@@ -70,7 +69,7 @@ jobs:
           const sinceDate = oneMonthAgo.toISOString();
 
           // List PRs with the "automerge" label created within the last month
-          const { data: issues } = await github.issues.listForRepo({
+          const { data: issues } = await github.rest.issues.listForRepo({
             owner,
             repo,
             labels: 'automerge',
@@ -90,14 +89,14 @@ jobs:
             }
 
             if (!await isPRApproved(pr.number)) {
-              console.log(`PR #${pr.number} hasn't been approved. Skipping merge.`);
-              await logRateLimit();
-              continue;
+               console.log(`PR #${pr.number} hasn't been approved. Skipping merge.`);
+               await logRateLimit();
+               continue;
             }
 
             if (await areAllChecksPassed(pullRequest.head.sha)) {
               try {
-                await github.pulls.merge({
+                await github.rest.pulls.merge({
                   owner,
                   repo,
                   pull_number: pr.number
