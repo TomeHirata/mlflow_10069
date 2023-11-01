@@ -1,7 +1,6 @@
 name: Multi-branch
 
 on:
-  pull_request:
   push:
 
 jobs:
@@ -14,5 +13,5 @@ jobs:
           SHA: '${{env.parentSHA}}'
         with:
           script: |
-            const script = require('./multi-branch.js')
+            const script = require('./.github/workflows/multi-branch.js')
             await script({github, context, core})
