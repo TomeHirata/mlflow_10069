@@ -1,18 +1,18 @@
 name: Multi-branch
 
 on:
-  pull_request_target:
-    types:
-      - opened
-      - edited
+  pull_request:
+  push:
 
 jobs:
   multi-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repository to the runner
-        uses: actions/checkout@v4  
-      - name: Run the scripts
-        run: |
-          sleep 30
-          echo "multi-branch job done"
+      - uses: actions/checkout@v4
+      - uses: actions/github-script@v6
+        env:
+          SHA: '${{env.parentSHA}}'
+        with:
+          script: |
+            const script = require('./multi-branch.js')
+            await script({github, context, core})
